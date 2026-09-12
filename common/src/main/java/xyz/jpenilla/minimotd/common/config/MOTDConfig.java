@@ -90,7 +90,11 @@ public final class MOTDConfig {
     }
 
     @Comment("The sprite atlas to pull from\n"
-      + "    ex: atlas=\"minecraft:blocks\" or atlas=\"minecraft:items\"")
+      + "    ex: atlas=\"minecraft:blocks\" or atlas=\"minecraft:items\"\n"
+      + "\n"
+      + " - 1.21.9/1.21.10 clients do not have the 'minecraft:items' atlas yet; those item textures are\n"
+      + "   still part of 'minecraft:blocks' there. For such clients the atlas is swapped to\n"
+      + "   'minecraft:blocks' automatically, with the sprite path left unchanged.")
     private String atlas = "minecraft:blocks";
 
     @Comment("The sprite within that atlas\n"

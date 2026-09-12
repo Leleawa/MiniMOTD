@@ -46,5 +46,13 @@ public final class Constants {
 
   public static final int MINECRAFT_1_21_9_PROTOCOL_VERSION = 773;
 
+  /**
+   * First protocol version registering the {@code minecraft:items} sprite atlas.
+   *
+   * <p>On 773 (1.21.9/1.21.10) item textures already lived in {@code minecraft:blocks};
+   * they were only split out into their own atlas later.</p>
+   */
+  public static final int MINECRAFT_ITEMS_ATLAS_PROTOCOL_VERSION = 774;
+
   public static final Component COMMAND_PREFIX = MiniMessage.miniMessage().deserialize("<white>[</white><gradient:#0047AB:#ADD8E6>" + PluginMetadata.NAME + "</gradient><white>]</white>");
 }

@@ -37,7 +37,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AtlasTagResolverTest {
-  private static final int MODERN = Constants.MINECRAFT_1_21_9_PROTOCOL_VERSION;
+  private static final int MODERN = Constants.MINECRAFT_ITEMS_ATLAS_PROTOCOL_VERSION;
+  private static final int NO_ITEMS_ATLAS = Constants.MINECRAFT_ITEMS_ATLAS_PROTOCOL_VERSION - 1;
   private static final int LEGACY = Constants.MINECRAFT_1_21_9_PROTOCOL_VERSION - 1;
 
   private static final Map<String, MOTDConfig.AtlasAlias> ALIASES = aliases();
@@ -69,6 +70,24 @@ class AtlasTagResolverTest {
     assertEquals(
       "{\"extra\":[{\"atlas\":\"minecraft:items\",\"sprite\":\"minecraft:item/porkchop\"},\"b\"],\"text\":\"a\"}",
       json("a<atlas:pork>b", MODERN)
+    );
+  }
+
+  @Test
+  void itemsAtlasIsDowngradedToBlocksBeforeItIsRegistered() {
+    // 773 (1.21.9/1.21.10) has no minecraft:items atlas; those sprites still live in minecraft:blocks,
+    // which is the default atlas and so is omitted from the serialized form.
+    assertEquals(
+      "{\"extra\":[{\"sprite\":\"minecraft:item/porkchop\"},\"b\"],\"text\":\"a\"}",
+      json("a<atlas:pork>b", NO_ITEMS_ATLAS)
+    );
+  }
+
+  @Test
+  void otherAtlasesAreUntouchedBeforeTheItemsAtlasExists() {
+    assertEquals(
+      json("a<atlas:gem>b", MODERN),
+      json("a<atlas:gem>b", NO_ITEMS_ATLAS)
     );
   }
 

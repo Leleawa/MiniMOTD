@@ -44,6 +44,9 @@ public final class AtlasTagResolver {
 
   private static final Pattern TAG_USAGE = Pattern.compile("<" + TAG_NAME + ":([^<>:]+)>");
 
+  private static final Key ITEMS_ATLAS = Key.key("minecraft:items");
+  private static final Key BLOCKS_ATLAS = Key.key("minecraft:blocks");
+
   private AtlasTagResolver() {
   }
 
@@ -81,6 +84,7 @@ public final class AtlasTagResolver {
 
   public static TagResolver create(final Map<String, MOTDConfig.AtlasAlias> aliases, final int protocolVersion) {
     final boolean spritesSupported = protocolVersion >= Constants.MINECRAFT_1_21_9_PROTOCOL_VERSION;
+    final boolean itemsAtlasRegistered = protocolVersion >= Constants.MINECRAFT_ITEMS_ATLAS_PROTOCOL_VERSION;
 
     return TagResolver.resolver(TAG_NAME, (args, ctx) -> {
       final String aliasName = args.popOr("An atlas alias name is required, ex: <atlas:myAlias>").value();
@@ -103,7 +107,20 @@ public final class AtlasTagResolver {
         throw ctx.newException("Atlas alias '" + aliasName + "' has an invalid atlas or sprite key", ex, args);
       }
 
-      return Tag.selfClosingInserting(Component.object(ObjectContents.sprite(atlas, sprite)));
+      return Tag.selfClosingInserting(Component.object(ObjectContents.sprite(resolveAtlas(atlas, itemsAtlasRegistered), sprite)));
     });
+  }
+
+  /**
+   * Rewrites {@code minecraft:items} to {@code minecraft:blocks} for clients whose protocol predates
+   * the split of item textures into their own atlas. Those clients still carry the same sprites in
+   * {@code minecraft:blocks}, so the sprite path is kept as-is; pointing at an unregistered atlas
+   * would instead render nothing.
+   */
+  private static Key resolveAtlas(final Key atlas, final boolean itemsAtlasRegistered) {
+    if (!itemsAtlasRegistered && atlas.equals(ITEMS_ATLAS)) {
+      return BLOCKS_ATLAS;
+    }
+    return atlas;
   }
 }
