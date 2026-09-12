@@ -33,6 +33,7 @@ import org.jspecify.annotations.NullMarked;
 import org.slf4j.Logger;
 import xyz.jpenilla.minimotd.common.config.ConfigManager;
 import xyz.jpenilla.minimotd.common.config.MOTDConfig;
+import xyz.jpenilla.minimotd.common.util.AtlasTagResolver;
 import xyz.jpenilla.minimotd.common.util.MiniPlaceholdersUtil;
 
 import static net.kyori.adventure.text.Component.newline;
@@ -76,6 +77,15 @@ public final class MiniMOTD<I> {
   }
 
   public PingResponse<I> createMOTD(final MOTDConfig config, final int onlinePlayers, final int maxPlayers) {
+    return this.createMOTD(config, onlinePlayers, maxPlayers, Integer.MAX_VALUE);
+  }
+
+  public PingResponse<I> createMOTD(
+    final MOTDConfig config,
+    final int onlinePlayers,
+    final int maxPlayers,
+    final int protocolVersion
+  ) {
     final PingResponse.PlayerCount count = config.modifyPlayerCount(onlinePlayers, maxPlayers);
     final PingResponse.Builder<I> response = PingResponse.<I>builder()
       .playerCount(count)
@@ -90,9 +100,9 @@ public final class MiniMOTD<I> {
       final int index = config.motds().size() == 1 ? 0 : ThreadLocalRandom.current().nextInt(config.motds().size());
       final MOTDConfig.MOTD motdConfig = config.motds().get(index);
       final Component motd = Component.textOfChildren(
-        parse(motdConfig.line1(), count),
+        parse(motdConfig.line1(), count, config, protocolVersion),
         newline(),
-        parse(motdConfig.line2(), count)
+        parse(motdConfig.line2(), count, config, protocolVersion)
       );
       response.motd(motd);
       iconString = motdConfig.icon();
@@ -105,7 +115,12 @@ public final class MiniMOTD<I> {
     return response.build();
   }
 
-  private static Component parse(final String input, final PingResponse.PlayerCount count) {
+  private static Component parse(
+    final String input,
+    final PingResponse.PlayerCount count,
+    final MOTDConfig config,
+    final int protocolVersion
+  ) {
     final String online = Integer.toString(count.onlinePlayers());
     final String max = Integer.toString(count.maxPlayers());
     return MiniMessage.miniMessage().deserialize(
@@ -113,6 +128,7 @@ public final class MiniMOTD<I> {
       TagResolver.resolver(
         Placeholder.unparsed("online_players", online),
         Placeholder.unparsed("max_players", max),
+        AtlasTagResolver.create(config.atlasAliases(), protocolVersion),
         MiniPlaceholdersUtil.tagResolver()
       )
     );

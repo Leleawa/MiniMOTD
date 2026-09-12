@@ -38,6 +38,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.configurate.ConfigurateException;
 import xyz.jpenilla.minimotd.common.MiniMOTD;
+import xyz.jpenilla.minimotd.common.util.AtlasTagResolver;
 import xyz.jpenilla.minimotd.common.util.Pair;
 
 import static xyz.jpenilla.minimotd.common.util.Pair.pair;
@@ -72,6 +73,7 @@ public final class ConfigManager {
     try {
       this.mainConfig = this.mainConfigLoader.load();
       this.mainConfigLoader.save(this.mainConfig);
+      AtlasTagResolver.validate(this.mainConfig, "main.conf", this.miniMOTD.logger());
 
       this.pluginSettings = this.pluginSettingsLoader.load();
       this.pluginSettingsLoader.save(this.pluginSettings);
@@ -101,6 +103,7 @@ public final class ConfigManager {
           );
           final MOTDConfig config = loader.load();
           loader.save(config);
+          AtlasTagResolver.validate(config, name + ".conf", this.miniMOTD.logger());
           this.extraConfigs.put(name, config);
         }
       }

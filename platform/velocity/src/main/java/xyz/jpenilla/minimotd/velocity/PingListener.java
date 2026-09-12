@@ -80,7 +80,12 @@ public final class PingListener {
       pong.samplePlayers(players.toArray(new ServerPing.SamplePlayer[0]));
     }
 
-    final PingResponse<Favicon> response = this.miniMOTD.createMOTD(config, playersCount, pong.getMaximumPlayers());
+    final PingResponse<Favicon> response = this.miniMOTD.createMOTD(
+      config,
+      playersCount,
+      pong.getMaximumPlayers(),
+      event.getConnection().getProtocolVersion().getProtocol()
+    );
     response.icon(pong::favicon);
     response.motd(pong::description);
     response.playerCount().applyCount(pong::onlinePlayers, pong::maximumPlayers);

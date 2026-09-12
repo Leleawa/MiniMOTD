@@ -25,7 +25,9 @@ package xyz.jpenilla.minimotd.common.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.configurate.objectmapping.ConfigSerializable;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
@@ -53,6 +55,14 @@ public final class MOTDConfig {
     + " - Putting more than one will cause one to be randomly chosen each refresh")
   private final List<MOTD> motds = new ArrayList<>();
 
+  @Comment("Named aliases for atlas sprite objects, usable in MOTD lines as <atlas:name>\n"
+    + "\n"
+    + " - Requires a Minecraft 1.21.9+ client; the 'object' text component did not exist before that.\n"
+    + " - Older clients cannot deserialize object components and silently discard the WHOLE MOTD,\n"
+    + "   so for them each <atlas:...> tag is replaced with that alias' 'fallback' string.\n"
+    + " - 'fallback' is parsed as MiniMessage, so it may contain colors, or be empty for nothing.")
+  private Map<String, AtlasAlias> atlasAliases = defaultAtlasAliases();
+
   @Comment("Enable MOTD-related features")
   private boolean motdEnabled = true;
 
@@ -60,6 +70,49 @@ public final class MOTDConfig {
   private boolean iconEnabled = true;
 
   private PlayerCountSettings playerCountSettings = new PlayerCountSettings();
+
+  private static Map<String, AtlasAlias> defaultAtlasAliases() {
+    final Map<String, AtlasAlias> map = new LinkedHashMap<>();
+    map.put("diamond", new AtlasAlias("minecraft:blocks", "block/diamond_block", "<aqua>[Diamond]"));
+    return map;
+  }
+
+  @ConfigSerializable
+  public static final class AtlasAlias {
+
+    public AtlasAlias() {
+    }
+
+    public AtlasAlias(final @NonNull String atlas, final @NonNull String sprite, final @NonNull String fallback) {
+      this.atlas = atlas;
+      this.sprite = sprite;
+      this.fallback = fallback;
+    }
+
+    @Comment("The sprite atlas to pull from\n"
+      + "    ex: atlas=\"minecraft:blocks\" or atlas=\"minecraft:items\"")
+    private String atlas = "minecraft:blocks";
+
+    @Comment("The sprite within that atlas\n"
+      + "    ex: sprite=\"block/diamond_block\" or sprite=\"item/porkchop\"")
+    private String sprite = "block/diamond_block";
+
+    @Comment("MiniMessage string shown in place of this sprite on clients older than 1.21.9")
+    private String fallback = "";
+
+    public @NonNull String atlas() {
+      return this.atlas;
+    }
+
+    public @NonNull String sprite() {
+      return this.sprite;
+    }
+
+    public @NonNull String fallback() {
+      return this.fallback;
+    }
+
+  }
 
   @ConfigSerializable
   public static final class MOTD {
@@ -176,6 +229,10 @@ public final class MOTDConfig {
 
   public boolean motdEnabled() {
     return this.motdEnabled;
+  }
+
+  public @NonNull Map<String, AtlasAlias> atlasAliases() {
+    return this.atlasAliases;
   }
 
   public boolean disablePlayerListHover() {

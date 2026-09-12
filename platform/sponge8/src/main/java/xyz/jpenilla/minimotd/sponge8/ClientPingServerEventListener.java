@@ -74,7 +74,8 @@ final class ClientPingServerEventListener implements EventListener<ClientPingSer
 
     final MOTDConfig config = this.miniMOTD.configManager().mainConfig();
 
-    final PingResponse<Favicon> mini = this.miniMOTD.createMOTD(config, players.online(), players.max());
+    final PingResponse<Favicon> mini = this.miniMOTD.createMOTD(
+      config, players.online(), players.max(), this.protocolVersion(event.client().version()));
     mini.playerCount().applyCount(players::setOnline, players::setMax);
     mini.motd(motd -> {
       if (this.legacy(event.client().version())) {
@@ -94,9 +95,15 @@ final class ClientPingServerEventListener implements EventListener<ClientPingSer
   }
 
   private boolean legacy(final @NonNull MinecraftVersion version) {
+    return version.isLegacy() || this.protocolVersion(version) < Constants.MINECRAFT_1_16_PROTOCOL_VERSION;
+  }
+
+  private int protocolVersion(final @NonNull MinecraftVersion version) {
+    if (version.isLegacy()) {
+      return -1;
+    }
     try {
-      return version.isLegacy()
-        || (int) GET_PROTOCOL.invoke(version) < Constants.MINECRAFT_1_16_PROTOCOL_VERSION;
+      return (int) GET_PROTOCOL.invoke(version);
     } catch (final ReflectiveOperationException e) {
       throw new IllegalStateException("Failed to get protocol version", e);
     }

@@ -53,7 +53,8 @@ public final class PingListener implements Listener {
 
     final ServerPing.Players players = response.getPlayers();
     final MOTDConfig cfg = this.miniMOTD.configManager().resolveConfig(e.getConnection().getVirtualHost());
-    final PingResponse<Favicon> mini = this.miniMOTD.createMOTD(cfg, players.getOnline(), players.getMax());
+    final PingResponse<Favicon> mini = this.miniMOTD.createMOTD(
+      cfg, players.getOnline(), players.getMax(), e.getConnection().getVersion());
 
     if (mini.hidePlayerCount()) {
       response.setPlayers(null);

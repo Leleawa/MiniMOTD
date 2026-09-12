@@ -63,7 +63,8 @@ abstract class ServerStatusPacketListenerImplMixin {
     final PingResponse<ServerStatus.Favicon> response = miniMOTD.createMOTD(
       config,
       minecraftServer.getPlayerCount(),
-      vanillaStatus.players().map(ServerStatus.Players::max).orElseGet(minecraftServer::getMaxPlayers)
+      vanillaStatus.players().map(ServerStatus.Players::max).orElseGet(minecraftServer::getMaxPlayers),
+      ((ConnectionAccess) this.connection).protocolVersion()
     );
 
     final MutableServerStatus modifiedStatus = new MutableServerStatus(vanillaStatus);
