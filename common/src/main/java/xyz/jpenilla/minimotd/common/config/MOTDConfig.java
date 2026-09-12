@@ -181,6 +181,38 @@ public final class MOTDConfig {
       + "When set to an empty list, the default count & list as determined by the proxy will be used.")
     private final List<String> servers = new ArrayList<>();
 
+    @Comment("Replaces the player list hover with custom lines of text, instead of\n"
+      + "the usernames of online players.\n"
+      + "Only applicable when running the plugin on a proxy (Velocity).\n"
+      + "\n"
+      + " - Lines are parsed as MiniMessage, then downsampled to legacy formatting codes.\n"
+      + "   The protocol carries hover entries as plain strings rather than components, so\n"
+      + "   hex colors are approximated to the nearest of the 16 legacy colors, gradients\n"
+      + "   become one color code per character, and <atlas:...> is NOT supported here.\n"
+      + " - Supported placeholders: <online_players>, <max_players>, <server_players:'serverName'>\n"
+      + " - Ignored when 'disable-player-list-hover' or 'hide-player-count' is true.")
+    private PlayerListHover playerListHover = new PlayerListHover();
+
+    @ConfigSerializable
+    public static final class PlayerListHover {
+
+      @Comment("Enable the custom player list hover")
+      private boolean playerListHoverEnabled = false;
+
+      @Comment("The lines to display, in order. An empty string renders as a blank line.")
+      private List<String> lines = defaultLines();
+
+      private static List<String> defaultLines() {
+        return new ArrayList<>(Arrays.asList(
+          "<dark_gray><strikethrough>---------------------",
+          "<green><bold>Players",
+          "<white>Lobby <dark_gray>\u00bb <aqua><server_players:'lobby'>",
+          "<dark_gray><strikethrough>---------------------"
+        ));
+      }
+
+    }
+
     @ConfigSerializable
     public static final class JustXMore {
 
@@ -241,6 +273,14 @@ public final class MOTDConfig {
 
   public boolean hidePlayerCount() {
     return this.playerCountSettings.hidePlayerCount;
+  }
+
+  public boolean playerListHoverEnabled() {
+    return this.playerCountSettings.playerListHover.playerListHoverEnabled;
+  }
+
+  public @NonNull List<String> playerListHoverLines() {
+    return this.playerCountSettings.playerListHover.lines;
   }
 
   private @NonNull PlayerCountModifier playerCountModifier() {

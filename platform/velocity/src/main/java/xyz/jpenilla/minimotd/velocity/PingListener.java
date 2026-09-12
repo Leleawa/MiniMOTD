@@ -31,9 +31,11 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerPing;
 import com.velocitypowered.api.util.Favicon;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -92,11 +94,35 @@ public final class PingListener {
 
     if (response.disablePlayerListHover()) {
       pong.clearSamplePlayers();
+    } else if (config.playerListHoverEnabled()) {
+      this.applyPlayerListHover(pong, config, response);
     }
     if (response.hidePlayerCount()) {
       pong.nullPlayers();
     }
 
     event.setPing(pong.build());
+  }
+
+  private void applyPlayerListHover(
+    final ServerPing.Builder pong,
+    final MOTDConfig config,
+    final PingResponse<Favicon> response
+  ) {
+    final List<String> lines = this.miniMOTD.createPlayerListHover(
+      config,
+      response.playerCount(),
+      ServerPlayerCountTagResolver.create(this.proxy)
+    );
+
+    // An ordered list with a distinct UUID per line: SamplePlayer implements equals/hashCode,
+    // so identical lines (blank spacers, repeated separators) must stay distinguishable.
+    final List<ServerPing.SamplePlayer> sample = new ArrayList<>(lines.size());
+    for (int i = 0; i < lines.size(); i++) {
+      sample.add(new ServerPing.SamplePlayer(lines.get(i), new UUID(0, i)));
+    }
+
+    pong.clearSamplePlayers();
+    pong.samplePlayers(sample);
   }
 }

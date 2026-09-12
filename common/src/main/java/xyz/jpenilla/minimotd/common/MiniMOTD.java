@@ -24,6 +24,7 @@
 package xyz.jpenilla.minimotd.common;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -35,6 +36,7 @@ import xyz.jpenilla.minimotd.common.config.ConfigManager;
 import xyz.jpenilla.minimotd.common.config.MOTDConfig;
 import xyz.jpenilla.minimotd.common.util.AtlasTagResolver;
 import xyz.jpenilla.minimotd.common.util.MiniPlaceholdersUtil;
+import xyz.jpenilla.minimotd.common.util.PlayerListHoverSerializer;
 
 import static net.kyori.adventure.text.Component.newline;
 
@@ -113,6 +115,36 @@ public final class MiniMOTD<I> {
     }
 
     return response.build();
+  }
+
+  /**
+   * Builds the player list hover lines for the given config, as legacy-formatted strings.
+   *
+   * <p>Unlike MOTD lines, these are not given the {@code <atlas:...>} resolver. Sample
+   * entries are plain strings, so an object component would be silently dropped; leaving
+   * the tag unresolved keeps it visible as literal text instead.</p>
+   *
+   * @param config           resolved config
+   * @param count            player count, already modified by the config
+   * @param platformResolver platform-specific resolver, ex. per-server player counts
+   * @return the hover lines, in config order
+   */
+  public List<String> createPlayerListHover(
+    final MOTDConfig config,
+    final PingResponse.PlayerCount count,
+    final TagResolver platformResolver
+  ) {
+    final String online = Integer.toString(count.onlinePlayers());
+    final String max = Integer.toString(count.maxPlayers());
+    return PlayerListHoverSerializer.serialize(
+      config.playerListHoverLines(),
+      TagResolver.resolver(
+        Placeholder.unparsed("online_players", online),
+        Placeholder.unparsed("max_players", max),
+        platformResolver,
+        MiniPlaceholdersUtil.tagResolver()
+      )
+    );
   }
 
   private static Component parse(

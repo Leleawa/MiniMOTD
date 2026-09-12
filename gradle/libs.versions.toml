@@ -38,6 +38,7 @@ adventureBom = { group = "net.kyori", name = "adventure-bom", version.ref = "adv
 adventureApi = { group = "net.kyori", name = "adventure-api" }
 adventureTextSerializerPlain = { group = "net.kyori", name = "adventure-text-serializer-plain" }
 adventureTextSerializerGson = { group = "net.kyori", name = "adventure-text-serializer-gson" }
+adventureTextSerializerLegacy = { group = "net.kyori", name = "adventure-text-serializer-legacy" }
 adventurePlatformBungeecord = { group = "net.kyori", name = "adventure-platform-bungeecord", version.ref = "adventurePlatform" }
 adventurePlatformBukkit = { group = "net.kyori", name = "adventure-platform-bukkit", version.ref = "adventurePlatform" }
 adventurePlatformFabric = { group = "net.kyori", name = "adventure-platform-fabric", version.ref = "adventurePlatformMod" }
