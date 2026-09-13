@@ -60,7 +60,19 @@ public final class MOTDConfig {
     + " - Requires a Minecraft 1.21.9+ client; the 'object' text component did not exist before that.\n"
     + " - Older clients cannot deserialize object components and silently discard the WHOLE MOTD,\n"
     + "   so for them each <atlas:...> tag is replaced with that alias' 'fallback' string.\n"
-    + " - 'fallback' is parsed as MiniMessage, so it may contain colors, or be empty for nothing.")
+    + " - 'fallback' is parsed as MiniMessage, so it may contain colors, or be empty for nothing.\n"
+    + "\n"
+    + "Each alias has the following fields:\n"
+    + " - atlas: The sprite atlas to pull from\n"
+    + "     ex: atlas=\"minecraft:blocks\" or atlas=\"minecraft:items\"\n"
+    + "   1.21.9/1.21.10 clients do not have the 'minecraft:items' atlas yet; those item textures are\n"
+    + "   still part of 'minecraft:blocks' there. For such clients the atlas is swapped to\n"
+    + "   'minecraft:blocks' automatically, with the sprite path left unchanged.\n"
+    + " - sprite: The sprite within that atlas\n"
+    + "     ex: sprite=\"block/diamond_block\" or sprite=\"item/porkchop\"\n"
+    + " - fallback: MiniMessage string shown in place of this sprite on clients older than 1.21.9\n"
+    + "\n"
+    + "    ex: my_alias { atlas=\"minecraft:items\", sprite=\"item/golden_apple\", fallback=\"<gold>[Apple]\" }")
   private Map<String, AtlasAlias> atlasAliases = defaultAtlasAliases();
 
   @Comment("Enable MOTD-related features")
@@ -89,19 +101,12 @@ public final class MOTDConfig {
       this.fallback = fallback;
     }
 
-    @Comment("The sprite atlas to pull from\n"
-      + "    ex: atlas=\"minecraft:blocks\" or atlas=\"minecraft:items\"\n"
-      + "\n"
-      + " - 1.21.9/1.21.10 clients do not have the 'minecraft:items' atlas yet; those item textures are\n"
-      + "   still part of 'minecraft:blocks' there. For such clients the atlas is swapped to\n"
-      + "   'minecraft:blocks' automatically, with the sprite path left unchanged.")
+    // Fields are documented once on MOTDConfig#atlasAliases rather than per field,
+    // since per-field comments would be repeated under every alias in the map.
     private String atlas = "minecraft:blocks";
 
-    @Comment("The sprite within that atlas\n"
-      + "    ex: sprite=\"block/diamond_block\" or sprite=\"item/porkchop\"")
     private String sprite = "block/diamond_block";
 
-    @Comment("MiniMessage string shown in place of this sprite on clients older than 1.21.9")
     private String fallback = "";
 
     public @NonNull String atlas() {
