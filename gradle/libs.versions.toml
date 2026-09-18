@@ -1,13 +1,13 @@
 [versions]
-run-task = "3.0.2"
+run-task = "3.1.0"
 resource-factory = "1.3.1"
-mod-publish-plugin = "2.1.1"
+mod-publish-plugin = "2.2.0"
 hangarPublishPlugin = "0.1.4"
-indra = "4.0.0"
+indra = "4.1.0"
 shadow = "9.6.1"
 adventure = "4.26.1"
 adventurePlatform = "4.4.1"
-adventurePlatformMod = "7.1.1"
+adventurePlatformMod = "7.2.0"
 configurate = "4.2.0"
 slf4j = "1.7.36"
 gson = "2.8.0"
@@ -16,12 +16,12 @@ paperApiLegacy = "1.16.5-R0.1-SNAPSHOT"
 paperApi = "1.21.11-R0.1-SNAPSHOT"
 paperlib = "1.0.8"
 waterfallApi = "1.16-R0.5-SNAPSHOT"
-fabricApi = "0.153.0+26.2"
-fabricLoader = "0.19.3"
-minecraft = "26.2"
+fabricApi = "0.160.7+26.3"
+fabricLoader = "0.19.5"
+minecraft = "26.3"
 spongeApi7 = "7.4.0"
 velocityApi = "3.4.0"
-neoforge = "26.2.0.7-beta"
+neoforge = "26.3.0.4-beta"
 
 [plugins]
 blossom = { id = "net.kyori.blossom", version = "2.2.0" }
@@ -80,7 +80,7 @@ spongeApi7 = { group = "org.spongepowered", name = "spongeapi", version.ref = "s
 
 velocityApi = { group = "com.velocitypowered", name = "velocity-api", version.ref = "velocityApi" }
 
-junitJupiter = "org.junit.jupiter:junit-jupiter:6.1.2"
+junitJupiter = "org.junit.jupiter:junit-jupiter:6.1.3"
 
 # build-logic
 indraCommon = { group = "net.kyori", name = "indra-common", version.ref = "indra" }
